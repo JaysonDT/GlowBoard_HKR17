@@ -11,6 +11,8 @@ uint32_t modetimer = 0;
 uint32_t modetimerprev = 0;
 int i = 0;
 int j = 0;
+int q = 0;
+int cycle = 0;
 
 // Parameter 1 = number of pixels in Glowstrip
 // Parameter 2 = Arduino pin number (most are valid)
@@ -61,19 +63,22 @@ void loop() {
   //rainbow(20);
 
   //rainbowCycle DONE
-  //rainbowCycle(20);
+  //rainbowCycle(5);
 
-  //theaterChase
-  theaterChase(Glowstrip.Color(64, 208, 224), 20); // turquoise
+  //fullrainbowCycle
+  fullrainbowCycle(20);
 
-  //
+  //theaterChase DONE
+  //theaterChase(Glowstrip.Color(64, 208, 224), 200); // turquoise
+
+  //theaterChaseRainbow At the moment would take too long to modify, ignore this function
   //theaterChaseRainbow(20);
 
   //coplights
   //coplights(225);
 
   //usacycle
-  //usaCycle(10);
+  usaCycle(10);
 
   /*
     percentWipe(20,0);
@@ -84,7 +89,7 @@ void loop() {
     delay(500);
     percentWipe(20,75);
     delay(500);
-    percentWipe(20, 100);
+    percentWipe(20, 101);
     delay(500);
   */
 
@@ -152,7 +157,7 @@ void rainbow(uint8_t wait) {
     Glowstrip.show();
     j++;
     modetimerprev = modetimer;
-  } else if(j > 255) {
+  } else if (j > 255) {
     j = 0;
   }
 
@@ -161,100 +166,145 @@ void rainbow(uint8_t wait) {
 
 // Slightly different, this makes the rainbow equally distributed throughout
 void rainbowCycle(uint8_t wait) {
-/*
-  uint16_t i, j;
+  /*
+    uint16_t i, j;
 
-  for (j = 0; j < 256 * 5; j++ ) { // 5 cycles of all colors on wheel
+    for (j = 0; j < 256 * 5; j++ ) { // 5 cycles of all colors on wheel
 
-    for (i = 0; i < Glowstrip.numPixels() / 2; i++) {
-
-        //Glowstrip.setPixelColor(i, Wheel(((i * 256 / Glowstrip.numPixels()) + j) & 255));
-
-      //modified for mirrored image for board, still gotta fix the odd one pixel not updating bug
-      Glowstrip.setPixelColor(Glowstrip.numPixels() / 2 - i, Wheel(((i * 256 / Glowstrip.numPixels()) + j) & 255));
-      Glowstrip.setPixelColor(Glowstrip.numPixels() / 2 + i, Wheel(((i * 256 / Glowstrip.numPixels()) + j) & 255));
-
-    }
-    Glowstrip.show();
-    delay(wait);
-  }
-*/
-  //without delay
-    modetimer = millis();
-    if (modetimer - modetimerprev >= wait && j < 256) {
       for (i = 0; i < Glowstrip.numPixels() / 2; i++) {
+
+          //Glowstrip.setPixelColor(i, Wheel(((i * 256 / Glowstrip.numPixels()) + j) & 255));
+
+        //modified for mirrored image for board, still gotta fix the odd one pixel not updating bug
         Glowstrip.setPixelColor(Glowstrip.numPixels() / 2 - i, Wheel(((i * 256 / Glowstrip.numPixels()) + j) & 255));
         Glowstrip.setPixelColor(Glowstrip.numPixels() / 2 + i, Wheel(((i * 256 / Glowstrip.numPixels()) + j) & 255));
+
       }
       Glowstrip.show();
-      j++;
-      modetimerprev = modetimer;
-    } else if(j > 255) {
-      j = 0;
+      delay(wait);
     }
+  */
+  //without delay
+  modetimer = millis();
+  if (modetimer - modetimerprev >= wait && j < 256) {
+    for (i = 0; i < Glowstrip.numPixels() / 2; i++) {
+      Glowstrip.setPixelColor(Glowstrip.numPixels() / 2 - i, Wheel(((i * 256 / Glowstrip.numPixels()) + j) & 255));
+      Glowstrip.setPixelColor(Glowstrip.numPixels() / 2 + i, Wheel(((i * 256 / Glowstrip.numPixels()) + j) & 255));
+    }
+    Glowstrip.show();
+    j++;
+    modetimerprev = modetimer;
+  } else if (j > 255) {
+    j = 0;
+  }
 }
 
 //Theatre-style crawling lights.
 void theaterChase(uint32_t c, uint8_t wait) {
+  /*
+    for (int j = 0; j < 10; j++) { //do 10 cycles of chasing
+     for (int q = 0; q < 4; q++) {
+       for (uint16_t i = 0; i < Glowstrip.numPixels(); i = i + 4) {
+         Glowstrip.setPixelColor(i + q, c);  //turn every third pixel on
+       }
+       Glowstrip.show();
 
-    for (int q = 0; q < 4; q++) {
-      for (uint16_t i = 0; i < Glowstrip.numPixels(); i = i + 4) {
-        Glowstrip.setPixelColor(i + q, c);  //turn every third pixel on
-      }
-      Glowstrip.show();
 
+       delay(wait);
 
-      delay(wait);
+       for (uint16_t i = 0; i < Glowstrip.numPixels(); i = i + 4) {
+         Glowstrip.setPixelColor(i + q, 0);      //turn every third pixel off
+       }
 
-      for (uint16_t i = 0; i < Glowstrip.numPixels(); i = i + 4) {
-        Glowstrip.setPixelColor(i + q, 0);      //turn every third pixel off
-      }
-
+     }
     }
+  */
+
+  //without delay
+  modetimer = millis();
+  if (modetimer - modetimerprev >= wait && q < 4) {
+    for (uint16_t i = 0; i < Glowstrip.numPixels(); i = i + 4) {
+      Glowstrip.setPixelColor(i + q, c);  //turn every third pixel on
+    }
+
+    Glowstrip.show();
+    for (uint16_t i = 0; i < Glowstrip.numPixels(); i = i + 4) {
+      Glowstrip.setPixelColor(i + q, 0);      //turn every third pixel off
+    }
+    q++;
+    modetimerprev = modetimer;
+  } else if (q >= 4) {
+    q = 0;
+  }
 
 }
 
 //Theatre-style crawling lights with rainbow effect
+//At the moment would take too long to modify, ignore this function
 void theaterChaseRainbow(uint8_t wait) {
+  /*
+    for (int j = 0; j < 256; j++) {   // cycle all 256 colors in the wheel
+      for (int q = 0; q < 3; q++) {
+        for (uint16_t i = 0; i < Glowstrip.numPixels(); i = i + 3) {
+          Glowstrip.setPixelColor(i + q, Wheel( (i + j) % 255)); //turn every third pixel on
+        }
+        Glowstrip.show();
 
-  for (int j = 0; j < 256; j++) {   // cycle all 256 colors in the wheel
-    for (int q = 0; q < 3; q++) {
-      for (uint16_t i = 0; i < Glowstrip.numPixels(); i = i + 3) {
-        Glowstrip.setPixelColor(i + q, Wheel( (i + j) % 255)); //turn every third pixel on
-      }
-      Glowstrip.show();
+        delay(wait);
 
-      delay(wait);
-
-      for (uint16_t i = 0; i < Glowstrip.numPixels(); i = i + 3) {
-        Glowstrip.setPixelColor(i + q, 0);      //turn every third pixel off
+        for (uint16_t i = 0; i < Glowstrip.numPixels(); i = i + 3) {
+          Glowstrip.setPixelColor(i + q, 0);      //turn every third pixel off
+        }
       }
     }
-  }
+  */
+  //without delay
 }
 // <more modes>
-
+int coplightside = 0;
 void coplights(uint8_t wait) {
-  for (uint16_t i = 0; i <= Glowstrip.numPixels() / 2; i++) {
+  /*
+    for (uint16_t i = 0; i <= Glowstrip.numPixels() / 2; i++) {
     Glowstrip.setPixelColor(i, Glowstrip.Color(255, 0, 0));
     Glowstrip.setPixelColor(Glowstrip.numPixels() - i, Glowstrip.Color(0, 0, 255));
-
     Glowstrip.show();
-  }
-  delay(wait);
-  for (uint16_t i = 0; i <= Glowstrip.numPixels() / 2; i++) {
+    }
+    delay(wait);
+    for (uint16_t i = 0; i <= Glowstrip.numPixels() / 2; i++) {
     Glowstrip.setPixelColor(i, Glowstrip.Color(0, 0, 255));
     Glowstrip.setPixelColor(Glowstrip.numPixels() - i, Glowstrip.Color(255, 0, 0));
 
     Glowstrip.show();
+    }
+    delay(wait);
+  */
+  //without delay
+  modetimer = millis();
+  if (modetimer - modetimerprev >= wait) {
+    if (coplightside == 0) {
+      for (uint16_t i = 0; i <= Glowstrip.numPixels() / 2; i++) {
+        Glowstrip.setPixelColor(i, Glowstrip.Color(255, 0, 0));
+        Glowstrip.setPixelColor(Glowstrip.numPixels() - i, Glowstrip.Color(0, 0, 255));
+        Glowstrip.show();
+      }
+      coplightside = 1;
+    } else {
+      for (uint16_t i = 0; i <= Glowstrip.numPixels() / 2; i++) {
+        Glowstrip.setPixelColor(i, Glowstrip.Color(0, 0, 255));
+        Glowstrip.setPixelColor(Glowstrip.numPixels() - i, Glowstrip.Color(255, 0, 0));
+        Glowstrip.show();
+      }
+      coplightside = 0;
+    }
+    modetimerprev = modetimer;
   }
-  delay(wait);
-
 }
-void usaCycle(uint8_t wait) {
-  uint16_t i, j;
 
-  for (j = 0; j < 256 * 5; j++) { // 5 cycles of all colors on wheel
+void usaCycle(uint8_t wait) {
+  /*
+    uint16_t i, j;
+
+    for (j = 0; j < 256 * 5; j++) { // 5 cycles of all colors on wheel
     for (i = 0; i <= Glowstrip.numPixels() / 2; i++) {
       Glowstrip.setPixelColor(Glowstrip.numPixels() / 2 - i, usaWheel(((i * 256 / (Glowstrip.numPixels() / 2)) + j) & 255));
       Glowstrip.setPixelColor(Glowstrip.numPixels() / 2 + i, usaWheel(((i * 256 / (Glowstrip.numPixels() / 2)) + j) & 255));
@@ -262,7 +312,21 @@ void usaCycle(uint8_t wait) {
 
     Glowstrip.show();
     delay(wait);
+    }
+  */
 
+  //without delay
+  modetimer = millis();
+  if (modetimer - modetimerprev >= wait && j < 256) {
+    for (i = 0; i < Glowstrip.numPixels() / 2; i++) {
+      Glowstrip.setPixelColor(Glowstrip.numPixels() / 2 - i, usaWheel(((i * 256 / (Glowstrip.numPixels() / 2)) + j) & 255));
+      Glowstrip.setPixelColor(Glowstrip.numPixels() / 2 + i, usaWheel(((i * 256 / (Glowstrip.numPixels() / 2)) + j) & 255));
+    }
+    Glowstrip.show();
+    j++;
+    modetimerprev = modetimer;
+  } else if (j > 255) {
+    j = 0;
   }
 }
 
@@ -285,18 +349,33 @@ void percentWipe(uint8_t wait, uint8_t percent) {
     }
     Glowstrip.show();
   }
-  delay(wait);
+  //delay(wait);
 }
 
 void fullrainbowCycle(uint8_t wait) {
-  uint16_t i, j;
+  /*
+     uint16_t i, j;
 
-  for (j = 0; j < 256 * 5; j++) { // 5 cycles of all colors on wheel
+    for (j = 0; j < 256 * 5; j++) { // 5 cycles of all colors on wheel
+      for (i = 0; i < Glowstrip.numPixels(); i++) {
+        Glowstrip.setPixelColor(i, Wheel(((i * 256 / Glowstrip.numPixels()) + j) & 255));
+      }
+      Glowstrip.show();
+      delay(wait);
+    }
+  */
+  //without delay
+  modetimer = millis();
+  if (modetimer - modetimerprev >= wait && j < 256) {
     for (i = 0; i < Glowstrip.numPixels(); i++) {
       Glowstrip.setPixelColor(i, Wheel(((i * 256 / Glowstrip.numPixels()) + j) & 255));
     }
     Glowstrip.show();
-    delay(wait);
+
+    j++;
+    modetimerprev = modetimer;
+  } else if (j > 255) {
+    j = 0;
   }
 }
 
@@ -318,13 +397,25 @@ uint32_t Wheel(byte WheelPos) {
 
 uint32_t usaWheel(byte WheelPos) {
   WheelPos = 255 - WheelPos;
+  /*
   if (WheelPos < 85) {
     return Glowstrip.Color(180, 180, 180);
-  }
-  if (WheelPos < 170) {
+  } else if (WheelPos < 170) {
     WheelPos -= 85;
     return Glowstrip.Color(230, 0, 0);
+  } else {
+    WheelPos -= 170;
+    return Glowstrip.Color(0, 0, 255);
   }
-  WheelPos -= 170;
-  return Glowstrip.Color(0, 0, 255);
+  */
+  //made more american
+  if (WheelPos < 85) {
+    return Glowstrip.Color(180, 180, 180);
+  } else if (WheelPos < 170) {
+    WheelPos -= 85;
+    return Glowstrip.Color(230, 0, 0);
+  } else {
+    WheelPos -= 170;
+    return Glowstrip.Color(0, 0, 255);
+  }
 }
