@@ -41,27 +41,6 @@ void setup() {
 
 void loop() {
 
-  //colorWipe(Glowstrip.Color(150, 150, 150), 20); // white
-  //colorWipe(Glowstrip.Color(255, 0, 0), 20); // red
-  //colorWipe(Glowstrip.Color(0, 255, 0), 20); // green
-  //colorWipe(Glowstrip.Color(0, 0, 255), 20); // blue
-
-  /*
-    edgescolorWipe(Glowstrip.Color(200,200,200),50); //white
-    delay(500);
-    edgescolorWipe(Glowstrip.Color(255, 0, 0), 50); // red
-    delay(500);
-    edgescolorWipe(Glowstrip.Color(0, 255, 0), 50); // green
-    delay(500);
-    edgescolorWipe(Glowstrip.Color(0, 0, 255), 50); // blue
-    delay(500);
-  */
-  //rainbow(20);
-  //rainbowCycle(15);
-  //theaterChase(Glowstrip.Color(64, 208, 224), 20); // turquoise
-  //coplights(225);
-  //usaCycle(10);
-
   //-------------------- modes to fix ----------------------------
 
   //colorwipe DONE
@@ -81,11 +60,11 @@ void loop() {
   //rainbow DONE
   //rainbow(20);
 
-  //rainbowCycle
+  //rainbowCycle DONE
   //rainbowCycle(20);
 
   //theaterChase
-  //theaterChase(Glowstrip.Color(64, 208, 224), 20); // turquoise
+  theaterChase(Glowstrip.Color(64, 208, 224), 20); // turquoise
 
   //
   //theaterChaseRainbow(20);
@@ -147,6 +126,7 @@ void edgescolorWipe(uint32_t c, uint8_t wait) {
     delay(wait);
   }
 }
+
 void rainbow(uint8_t wait) {
   /*
     uint16_t i, j;
@@ -181,15 +161,15 @@ void rainbow(uint8_t wait) {
 
 // Slightly different, this makes the rainbow equally distributed throughout
 void rainbowCycle(uint8_t wait) {
-
+/*
   uint16_t i, j;
 
   for (j = 0; j < 256 * 5; j++ ) { // 5 cycles of all colors on wheel
 
     for (i = 0; i < Glowstrip.numPixels() / 2; i++) {
-      /*
-        Glowstrip.setPixelColor(i, Wheel(((i * 256 / Glowstrip.numPixels()) + j) & 255));
-      */
+
+        //Glowstrip.setPixelColor(i, Wheel(((i * 256 / Glowstrip.numPixels()) + j) & 255));
+
       //modified for mirrored image for board, still gotta fix the odd one pixel not updating bug
       Glowstrip.setPixelColor(Glowstrip.numPixels() / 2 - i, Wheel(((i * 256 / Glowstrip.numPixels()) + j) & 255));
       Glowstrip.setPixelColor(Glowstrip.numPixels() / 2 + i, Wheel(((i * 256 / Glowstrip.numPixels()) + j) & 255));
@@ -198,12 +178,25 @@ void rainbowCycle(uint8_t wait) {
     Glowstrip.show();
     delay(wait);
   }
+*/
+  //without delay
+    modetimer = millis();
+    if (modetimer - modetimerprev >= wait && j < 256) {
+      for (i = 0; i < Glowstrip.numPixels() / 2; i++) {
+        Glowstrip.setPixelColor(Glowstrip.numPixels() / 2 - i, Wheel(((i * 256 / Glowstrip.numPixels()) + j) & 255));
+        Glowstrip.setPixelColor(Glowstrip.numPixels() / 2 + i, Wheel(((i * 256 / Glowstrip.numPixels()) + j) & 255));
+      }
+      Glowstrip.show();
+      j++;
+      modetimerprev = modetimer;
+    } else if(j > 255) {
+      j = 0;
+    }
 }
 
 //Theatre-style crawling lights.
 void theaterChase(uint32_t c, uint8_t wait) {
 
-  for (int j = 0; j < 10; j++) { //do 10 cycles of chasing
     for (int q = 0; q < 4; q++) {
       for (uint16_t i = 0; i < Glowstrip.numPixels(); i = i + 4) {
         Glowstrip.setPixelColor(i + q, c);  //turn every third pixel on
@@ -218,7 +211,7 @@ void theaterChase(uint32_t c, uint8_t wait) {
       }
 
     }
-  }
+
 }
 
 //Theatre-style crawling lights with rainbow effect
