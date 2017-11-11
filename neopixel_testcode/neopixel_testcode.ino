@@ -6,6 +6,12 @@
 #define PIN 6
 #define LEDCOUNT 54
 
+//code for no delay
+uint32_t modetimer = 0;
+uint32_t modetimerprev = 0;
+int i = 0;
+int j = 0;
+
 // Parameter 1 = number of pixels in Glowstrip
 // Parameter 2 = Arduino pin number (most are valid)
 // Parameter 3 = pixel type flags, add together as needed:
@@ -39,33 +45,94 @@ void loop() {
   //colorWipe(Glowstrip.Color(255, 0, 0), 20); // red
   //colorWipe(Glowstrip.Color(0, 255, 0), 20); // green
   //colorWipe(Glowstrip.Color(0, 0, 255), 20); // blue
-  
-  edgescolorWipe(Glowstrip.Color(200,200,200),50); //white
-  delay(500);
-  edgescolorWipe(Glowstrip.Color(255, 0, 0), 50); // red
-  delay(500);
-  edgescolorWipe(Glowstrip.Color(0, 255, 0), 50); // green
-  delay(500);
-  edgescolorWipe(Glowstrip.Color(0, 0, 255), 50); // blue
-  delay(500);
-  
+
+  /*
+    edgescolorWipe(Glowstrip.Color(200,200,200),50); //white
+    delay(500);
+    edgescolorWipe(Glowstrip.Color(255, 0, 0), 50); // red
+    delay(500);
+    edgescolorWipe(Glowstrip.Color(0, 255, 0), 50); // green
+    delay(500);
+    edgescolorWipe(Glowstrip.Color(0, 0, 255), 50); // blue
+    delay(500);
+  */
   //rainbow(20);
   //rainbowCycle(15);
   //theaterChase(Glowstrip.Color(64, 208, 224), 20); // turquoise
   //coplights(225);
   //usaCycle(10);
 
+  //-------------------- modes to fix ----------------------------
+
+  //colorwipe DONE
+
+  //colorWipe(Glowstrip.Color(150, 150, 150), 200); // white
+  //colorWipe(Glowstrip.Color(0, 255, 0), 200);
+
+
+  //edgescolorwipe
+  /*
+    edgescolorWipe(Glowstrip.Color(200, 200, 200), 50); //white
+    delay(500);
+    edgescolorWipe(Glowstrip.Color(255, 0, 0), 50); // red
+    delay(500);
+  */
+
+  //rainbow DONE
+  //rainbow(20);
+
+  //rainbowCycle
+  //rainbowCycle(20);
+
+  //theaterChase
+  //theaterChase(Glowstrip.Color(64, 208, 224), 20); // turquoise
+
+  //
+  //theaterChaseRainbow(20);
+
+  //coplights
+  //coplights(225);
+
+  //usacycle
+  //usaCycle(10);
+
+  /*
+    percentWipe(20,0);
+    delay(500);
+    percentWipe(20, 25);
+    delay(500);
+    percentWipe(20, 50);
+    delay(500);
+    percentWipe(20,75);
+    delay(500);
+    percentWipe(20, 100);
+    delay(500);
+  */
 
 }
 
 
 // Fill the dots one after the other with a color
 void colorWipe(uint32_t c, uint8_t wait) {
+  /*
+    for (uint16_t i = 0; i < Glowstrip.numPixels(); i++) {
+      Glowstrip.setPixelColor(i, c);
+      Glowstrip.show();
+      delay(wait);
+    }
+  */
 
-  for (uint16_t i = 0; i < Glowstrip.numPixels(); i++) {
-    Glowstrip.setPixelColor(i, c);
-    Glowstrip.show();
-    //delay(wait);
+  //without delay
+  modetimer = millis();
+  if (modetimer - modetimerprev >= wait) {
+    if (i < Glowstrip.numPixels()) {
+      Glowstrip.setPixelColor(i, c);
+      Glowstrip.show();
+      i++;
+      modetimerprev = modetimer;
+    } else {
+      i = 0;
+    }
   }
 
 }
@@ -81,16 +148,32 @@ void edgescolorWipe(uint32_t c, uint8_t wait) {
   }
 }
 void rainbow(uint8_t wait) {
+  /*
+    uint16_t i, j;
+    for (j = 0; j < 256; j++) {
 
-  uint16_t i, j;
-  for (j = 0; j < 256; j++) {
+      for (i = 0; i < Glowstrip.numPixels() / 2; i++) {
+        Glowstrip.setPixelColor(i, Wheel((i + j) & 255));
+        Glowstrip.setPixelColor(Glowstrip.numPixels() - i, Wheel((i + j) & 255));
+      }
+      Glowstrip.show();
+      delay(wait);
+    }
+  */
 
+  //without delay
+
+  modetimer = millis();
+  if (modetimer - modetimerprev >= wait && j < 256) {
     for (i = 0; i < Glowstrip.numPixels() / 2; i++) {
       Glowstrip.setPixelColor(i, Wheel((i + j) & 255));
       Glowstrip.setPixelColor(Glowstrip.numPixels() - i, Wheel((i + j) & 255));
     }
     Glowstrip.show();
-    delay(wait);
+    j++;
+    modetimerprev = modetimer;
+  } else if(j > 255) {
+    j = 0;
   }
 
 }
