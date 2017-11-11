@@ -11,6 +11,8 @@ uint32_t modetimer = 0;
 uint32_t modetimerprev = 0;
 int i = 0;
 int j = 0;
+int q = 0;
+int cycle = 0;
 
 // Parameter 1 = number of pixels in Glowstrip
 // Parameter 2 = Arduino pin number (most are valid)
@@ -61,12 +63,15 @@ void loop() {
   //rainbow(20);
 
   //rainbowCycle DONE
-  rainbowCycle(20);
+  //rainbowCycle(5);
 
-  //theaterChase
-  //theaterChase(Glowstrip.Color(64, 208, 224), 20); // turquoise
+  //fullrainbowCycle DONE
+  //fullrainbowCycle(20);
 
-  //
+  //theaterChase DONE
+  theaterChase(Glowstrip.Color(64, 208, 224), 200); // turquoise
+
+  //theaterChaseRainbow At the moment would take too long to modify, ignore this function
   //theaterChaseRainbow(20);
 
   //coplights
@@ -84,64 +89,12 @@ void loop() {
     delay(500);
     percentWipe(20,75);
     delay(500);
-    percentWipe(20, 100);
+    percentWipe(20, 101);
     delay(500);
   */
 
 }
 
-// <more modes>
-
-void usaCycle(uint8_t wait) {
-  uint16_t i, j;
-
-  for (j = 0; j < 256 * 5; j++) { // 5 cycles of all colors on wheel
-    for (i = 0; i <= Glowstrip.numPixels() / 2; i++) {
-      Glowstrip.setPixelColor(Glowstrip.numPixels() / 2 - i, usaWheel(((i * 256 / (Glowstrip.numPixels() / 2)) + j) & 255));
-      Glowstrip.setPixelColor(Glowstrip.numPixels() / 2 + i, usaWheel(((i * 256 / (Glowstrip.numPixels() / 2)) + j) & 255));
-    }
-
-    Glowstrip.show();
-    delay(wait);
-
-  }
-}
-
-void percentWipe(uint8_t wait, uint8_t percent) {
-  uint16_t i, j;
-
-  for (j = 0; j < 100; j++) { // 5 cycles of all colors on wheel
-    for (i = 0; i <= Glowstrip.numPixels() / 2; i++) {
-
-
-      uint32_t WheelPos;
-      WheelPos = ((i * 100 / (Glowstrip.numPixels() / 2)));
-      if (WheelPos < percent) {
-        Glowstrip.setPixelColor(Glowstrip.numPixels() / 2 - i, Glowstrip.Color(200, 200, 200));
-        Glowstrip.setPixelColor(Glowstrip.numPixels() / 2 + i - 1, Glowstrip.Color(200, 200, 200));
-      } else {
-        Glowstrip.setPixelColor(Glowstrip.numPixels() / 2 - i, Glowstrip.Color(0, 0, 0));
-        Glowstrip.setPixelColor(Glowstrip.numPixels() / 2 + i - 1, Glowstrip.Color(0, 0, 0));
-      }
-    }
-    Glowstrip.show();
-  }
-  delay(wait);
-}
-
-void fullrainbowCycle(uint8_t wait) {
-  uint16_t i, j;
-
-  for (j = 0; j < 256 * 5; j++) { // 5 cycles of all colors on wheel
-    for (i = 0; i < Glowstrip.numPixels(); i++) {
-      Glowstrip.setPixelColor(i, Wheel(((i * 256 / Glowstrip.numPixels()) + j) & 255));
-    }
-    Glowstrip.show();
-    delay(wait);
-  }
-}
-
-// <more modes/>
 // Input a value 0 to 255 to get a color value.
 // The colours are a transition r - g - b - back to r.
 uint32_t Wheel(byte WheelPos) {
@@ -157,15 +110,4 @@ uint32_t Wheel(byte WheelPos) {
   return Glowstrip.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
 }
 
-uint32_t usaWheel(byte WheelPos) {
-  WheelPos = 255 - WheelPos;
-  if (WheelPos < 85) {
-    return Glowstrip.Color(180, 180, 180);
-  }
-  if (WheelPos < 170) {
-    WheelPos -= 85;
-    return Glowstrip.Color(230, 0, 0);
-  }
-  WheelPos -= 170;
-  return Glowstrip.Color(0, 0, 255);
-}
+
