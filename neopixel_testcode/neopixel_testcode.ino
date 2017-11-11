@@ -35,13 +35,27 @@ void setup() {
 
 void loop() {
 
-  colorWipe(strip.Color(150, 150, 150), 20); // white
-  colorWipe(strip.Color(255, 0, 0), 20); // red
-  colorWipe(strip.Color(0, 255, 0), 20); // green
-  colorWipe(strip.Color(0, 0, 255), 20); // blue
-  rainbow(20);
-  rainbowCycle(15);
-  theaterChase(strip.Color(64, 208, 224), 20); // turquoise
+  //colorWipe(strip.Color(150, 150, 150), 20); // white
+  //colorWipe(strip.Color(255, 0, 0), 20); // red
+  //colorWipe(strip.Color(0, 255, 0), 20); // green
+  //colorWipe(strip.Color(0, 0, 255), 20); // blue
+  
+  edgescolorWipe(strip.Color(200,200,200),50); //white
+  delay(500);
+  edgescolorWipe(strip.Color(255, 0, 0), 50); // red
+  delay(500);
+  edgescolorWipe(strip.Color(0, 255, 0), 50); // green
+  delay(500);
+  edgescolorWipe(strip.Color(0, 0, 255), 50); // blue
+  delay(500);
+  
+  //rainbow(20);
+  //rainbowCycle(15);
+  //theaterChase(strip.Color(64, 208, 224), 20); // turquoise
+  //coplights(225);
+  //usaCycle(10);
+
+
 }
 
 
@@ -56,6 +70,16 @@ void colorWipe(uint32_t c, uint8_t wait) {
 
 }
 
+void edgescolorWipe(uint32_t c, uint8_t wait) {
+  for (uint16_t i = 0; i <= strip.numPixels() / 4; i++) {
+    strip.setPixelColor(i, c);
+    strip.setPixelColor(strip.numPixels() / 2 - i, c);
+    strip.setPixelColor(strip.numPixels() / 2 + i, c);
+    strip.setPixelColor(strip.numPixels() - i, c);
+    strip.show();
+    delay(wait);
+  }
+}
 void rainbow(uint8_t wait) {
 
   uint16_t i, j;
@@ -64,13 +88,8 @@ void rainbow(uint8_t wait) {
     for (i = 0; i < strip.numPixels() / 2; i++) {
       strip.setPixelColor(i, Wheel((i + j) & 255));
       strip.setPixelColor(strip.numPixels() - i, Wheel((i + j) & 255));
-
-
     }
-
-
     strip.show();
-
     delay(wait);
   }
 
@@ -152,9 +171,9 @@ void coplights(uint8_t wait) {
     strip.setPixelColor(strip.numPixels() - i, strip.Color(255, 0, 0));
 
     strip.show();
-
-    delay(wait);
   }
+  delay(wait);
+
 }
 void usaCycle(uint8_t wait) {
   uint16_t i, j;
