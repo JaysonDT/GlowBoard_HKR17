@@ -44,11 +44,20 @@ uint32_t usaWheel(byte WheelPos) {
   }
   */
   //made more american
-  if (WheelPos < 85) {
-    return Glowstrip.Color(180, 180, 180);
+  if (WheelPos < 86) {
+    if ((WheelPos & 0x01) == 0) {
+      return Glowstrip.Color(180, 180, 180);
+    } else {
+      return Glowstrip.Color(230, 0, 0);
+    }
+
   } else if (WheelPos < 170) {
-    WheelPos -= 85;
-    return Glowstrip.Color(230, 0, 0);
+    WheelPos -= 86;
+    if ((WheelPos & 0x01) == 0) {
+      return Glowstrip.Color(180, 180, 180);
+    } else {
+      return Glowstrip.Color(230, 0, 0);
+    }
   } else {
     WheelPos -= 170;
     return Glowstrip.Color(0, 0, 255);
