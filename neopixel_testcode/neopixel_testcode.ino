@@ -13,6 +13,7 @@ int i = 0;
 int j = 0;
 int q = 0;
 int cycle = 0;
+int mode = 1;
 
 // Parameter 1 = number of pixels in Glowstrip
 // Parameter 2 = Arduino pin number (most are valid)
@@ -43,8 +44,54 @@ void setup() {
 
 void loop() {
 
-  //-------------------- modes to fix ----------------------------
+  switch (mode) {
+    case 1:
+      //colorWipe(Glowstrip.Color(34, 76, 12), 85);
+      //coplights(225);
+      //rainbowCycle(5);
+      edgescolorWipe(Glowstrip.Color(0, 0, 255), 200); //white
+     
+      break;
 
+    case 2:
+      rainbowCycle(5);
+      break;
+
+    case 3:
+      coplights(225);
+      break;
+
+    case 4:
+      fullrainbowCycle(20);
+      break;
+
+    case 5:
+      usaCycle(10);
+      break;
+
+    case 6:
+      theaterChase(Glowstrip.Color(64, 208, 224), 200);
+      break;
+
+    case 7:
+      theaterChaseRainbow(20);
+      break;
+
+    case 8:
+
+      break;
+
+    case 9:
+
+      break;
+
+    case 10:
+
+      break;
+  }
+
+
+  //-------------------- modes to fix ----------------------------
   //colorwipe DONE
 
   //colorWipe(Glowstrip.Color(150, 150, 150), 200); // white
@@ -69,7 +116,7 @@ void loop() {
   //fullrainbowCycle(20);
 
   //theaterChase DONE
-  theaterChase(Glowstrip.Color(64, 208, 224), 200); // turquoise
+  //theaterChase(Glowstrip.Color(64, 208, 224), 200); // turquoise
 
   //theaterChaseRainbow At the moment would take too long to modify, ignore this function
   //theaterChaseRainbow(20);
