@@ -4,7 +4,7 @@
 #endif
 
 #define PIN 6
-#define LEDCOUNT 48
+#define LEDCOUNT 56
 
 //code for no delay
 uint32_t modetimer = 0;
@@ -13,7 +13,18 @@ int i = 0;
 int j = 0;
 int q = 0;
 int cycle = 0;
+
+//mode stuff
 int mode = 1;
+
+//button stuff
+int button1Pin = 8;
+int button2Pin = 9;
+int button3Pin = 10;
+int firsttime = 1;
+unsigned long startTime;
+unsigned long pressTime;
+int buttonpressed = 0;
 
 // Parameter 1 = number of pixels in Glowstrip
 // Parameter 2 = Arduino pin number (most are valid)
@@ -37,6 +48,14 @@ void setup() {
 #endif
   // End of trinket special code
 
+  //button code
+  pinMode(button1Pin, INPUT);
+  pinMode(button2Pin, INPUT);
+  pinMode(button3Pin, INPUT);
+  digitalWrite(button1Pin, LOW);
+  digitalWrite(button2Pin, LOW);
+  digitalWrite(button3Pin, LOW);
+  Serial.begin(9600);
 
   Glowstrip.begin();
   Glowstrip.show(); // Initialize all pixels to 'off'
@@ -50,7 +69,7 @@ void loop() {
       //coplights(225);
       //rainbowCycle(5);
       edgescolorWipe(Glowstrip.Color(0, 0, 255), 200); //white
-     
+
       break;
 
     case 2:
@@ -70,75 +89,77 @@ void loop() {
       break;
 
     case 6:
-      theaterChase(Glowstrip.Color(64, 208, 224), 200);
+      theaterChase(Glowstrip.Color(64, 208, 224), 50);
       break;
 
     case 7:
       theaterChaseRainbow(20);
       break;
-
-    case 8:
-
-      break;
-
-    case 9:
-
-      break;
-
-    case 10:
-
+    default:
+      mode = 1;
       break;
   }
 
+  //button code
+  if (digitalRead(button1Pin) == HIGH) {
+    if (firsttime == 1) {
+      startTime = millis();
+      firsttime = 0;
+    }
+    pressTime = millis() - startTime;
+    if (pressTime >= 15) {
+      Serial.print("1Time: ");
+      Serial.println(pressTime);
+      buttonpressed = 1;
+    }
+    if (pressTime > 3000) {
+      //
+    }
+  } else if (digitalRead(button2Pin) == HIGH) {
+    if (firsttime == 1) {
+      startTime = millis();
+      firsttime = 0;
+    }
+    pressTime = millis() - startTime;
+    if (pressTime >= 15) {
+      Serial.print("2Time: ");
+      Serial.println(pressTime);
+      buttonpressed = 2;
+    }
+    if (pressTime > 3000) {
+      //
+    }
+  } else if (digitalRead(button3Pin) == HIGH) {
+    if (firsttime == 1) {
+      startTime = millis();
+      firsttime = 0;
+    }
+    pressTime = millis() - startTime;
+    if (pressTime >= 15) {
+      Serial.print("3Time: ");
+      Serial.println(pressTime);
+      buttonpressed = 3;
+    }
+    if (pressTime > 3000) {
+      //
+    }
+  } else if (firsttime == 0) {
+    firsttime = 1;
+    if (buttonpressed == 1) {
+      mode = mode + 1;
+    } else if (buttonpressed == 2) {
 
-  //-------------------- modes to fix ----------------------------
-  //colorwipe DONE
-
-  //colorWipe(Glowstrip.Color(150, 150, 150), 200); // white
-  //colorWipe(Glowstrip.Color(0, 255, 0), 200);
-
-
-  //edgescolorwipe
-  /*
-    edgescolorWipe(Glowstrip.Color(200, 200, 200), 50); //white
-    delay(500);
-    edgescolorWipe(Glowstrip.Color(255, 0, 0), 50); // red
-    delay(500);
-  */
-
-  //rainbow DONE
-  //rainbow(20);
-
-  //rainbowCycle DONE
-  //rainbowCycle(5);
-
-  //fullrainbowCycle DONE
-  //fullrainbowCycle(20);
-
-  //theaterChase DONE
-  //theaterChase(Glowstrip.Color(64, 208, 224), 200); // turquoise
-
-  //theaterChaseRainbow At the moment would take too long to modify, ignore this function
-  //theaterChaseRainbow(20);
-
-  //coplights
-  //coplights(225);
-
-  //usacycle
-  //usaCycle(10);
-
-  /*
-    percentWipe(20,0);
-    delay(500);
-    percentWipe(20, 25);
-    delay(500);
-    percentWipe(20, 50);
-    delay(500);
-    percentWipe(20,75);
-    delay(500);
-    percentWipe(20, 101);
-    delay(500);
-  */
+    } else {
+      if (mode != 1) {
+        mode = mode - 1;
+      } else {
+        //loop back to last number in mode
+        mode = 7;
+      }
+    }
+    Serial.println("Time: 0 milleseconds; 0 seconds");
+    buttonpressed = 0;
+  }
 
 }
 
