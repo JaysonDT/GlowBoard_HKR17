@@ -19,8 +19,8 @@ void usaCycle(uint8_t wait) {
   modetimer = millis();
   if (modetimer - modetimerprev >= wait && j < 256) {
     for (i = 0; i < Glowstrip.numPixels() / 2; i++) {
-      Glowstrip.setPixelColor(Glowstrip.numPixels() / 2 - i, usaWheel(((i * 256 / (Glowstrip.numPixels() / 2)) + j) & 255));
-      Glowstrip.setPixelColor(Glowstrip.numPixels() / 2 + i, usaWheel(((i * 256 / (Glowstrip.numPixels() / 2)) + j) & 255));
+      Glowstrip.setPixelColor(Glowstrip.numPixels() / 2 - i-1, usaWheel(((i * 256 / (Glowstrip.numPixels() / 2)) + j) & 255, i));
+      Glowstrip.setPixelColor(Glowstrip.numPixels() / 2 + i, usaWheel(((i * 256 / (Glowstrip.numPixels() / 2)) + j) & 255, i));
     }
     Glowstrip.show();
     j++;
@@ -30,7 +30,7 @@ void usaCycle(uint8_t wait) {
   }
 }
 
-uint32_t usaWheel(byte WheelPos) {
+uint32_t usaWheel(byte WheelPos, byte i) {
   WheelPos = 255 - WheelPos;
   /*
   if (WheelPos < 85) {
@@ -45,7 +45,7 @@ uint32_t usaWheel(byte WheelPos) {
   */
   //made more american
   if (WheelPos < 86) {
-    if ((WheelPos & 0x01) == 0) {
+    if ((i & 0x01) == 0) {
       return Glowstrip.Color(180, 180, 180);
     } else {
       return Glowstrip.Color(230, 0, 0);
@@ -53,7 +53,7 @@ uint32_t usaWheel(byte WheelPos) {
 
   } else if (WheelPos < 170) {
     WheelPos -= 86;
-    if ((WheelPos & 0x01) == 0) {
+    if ((i & 0x01) == 0) {
       return Glowstrip.Color(180, 180, 180);
     } else {
       return Glowstrip.Color(230, 0, 0);

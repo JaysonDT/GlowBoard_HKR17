@@ -7,6 +7,7 @@
 #define LEDCOUNT 54
 
 //potentiometer analog
+#define enablepot true
 #define potpin 0
 int potval = 0;
 int oldpotval = 0;
@@ -65,7 +66,7 @@ void setup() {
   Serial.begin(9600);
 
   oldpotval = analogRead(potpin);
-
+  
   Glowstrip.begin();
   Glowstrip.show(); // Initialize all pixels to 'off'
 }
@@ -76,29 +77,29 @@ void loop() {
     case 1:
       //multiple functions 1 mode
       modetimer = millis();
-      if (modetimer - modetimerprev >= 100) {
+      //if (modetimer - modetimerprev >= 100) {
         if (submode == 0) {
           colorWipe(Glowstrip.Color(255, 0, 0), 20);
         } else if (submode == 1) {
           colorWipe(Glowstrip.Color(0, 0, 255), 20);
         } else if (submode == 2) {
           colorWipe(Glowstrip.Color(0, 255, 0), 20);
-        } else if (submode == 3){
+        } else if (submode == 3) {
           colorWipe(Glowstrip.Color(255, 255, 255), 20);
         }
-        if (modetimer - modetimerprev <= 1000) {
+        if (modetimer - modetimerprev >= 2000) {
 
           if (submode > 3) {
             submode = 0;
           } else {
-            submode++;
+            submode = submode + 1;
           }
           modetimerprev = modetimer;
         }
-      }
+      //}
       break;
     case 2:
-      rainbowCycle(100);
+      rainbowCycle(25);
       break;
     case 3:
       coplights(225);
@@ -107,10 +108,10 @@ void loop() {
       fullrainbowCycle(30);
       break;
     case 5:
-      usaCycle(100);
+      usaCycle(10);
       break;
     case 6:
-      theaterChase(Glowstrip.Color(64, 208, 224), 100);
+      theaterChase(Glowstrip.Color(64, 208, 224), 100, 7);
       break;
     case 7:
       //theaterChaseRainbow(100);
@@ -169,39 +170,40 @@ void loop() {
   }
 
   // potentiometer brightnesscode
-  potval = analogRead(potpin);
-  Serial.print("pot: ");
-  Serial.println(potval);
-  if (potval >= oldpotval + 10 || potval <= oldpotval - 10) {
-    modetimer = millis();
-    modetimerprev = millis();
-    while (modetimer - modetimerprev < 500 ) {
-      potval = analogRead(potpin);
-      if (potval >= oldpotval + 10 || potval <= oldpotval - 10) {
+  if (enablepot == true) {
+    potval = analogRead(potpin);
+    Serial.print("pot: ");
+    Serial.println(potval);
+    if (potval >= oldpotval + 20 || potval <= oldpotval - 20) {
+      modetimer = millis();
+      modetimerprev = millis();
+      while (modetimer - modetimerprev < 300 ) {
+        potval = analogRead(potpin);
+        if (potval >= oldpotval + 10 || potval <= oldpotval - 10) {
+          oldpotval = analogRead(potpin);
+        }
+
+        Serial.print("potval: ");
+        Serial.println(potval);
+        percentval = map(potval, 1, 1024, 1, 101);
+        //percentval = potval / 10;
+        percentWipe(20, percentval);
+        if (potval != oldpotval) {
+          modetimerprev = modetimer;
+        }
+        Glowstrip.setBrightness(map(potval, 1, 1024, 15, 256));
+        modetimer = millis();
         oldpotval = analogRead(potpin);
       }
 
-      Serial.print("potval: ");
-      Serial.println(potval);
-      percentval = map(potval, 1, 1024, 1, 100);
-      //percentval = potval / 10;
-      percentWipe(20, percentval);
-      if (potval != oldpotval) {
-        modetimerprev = modetimer;
-      }
-      modetimer = millis();
-      oldpotval = analogRead(potpin);
+      Glowstrip.setBrightness(map(potval, 1, 1024, 15, 255));
+      i = 0;
+      j = 0;
+      q = 0;
     }
-
-    Glowstrip.setBrightness(map(potval, 1, 1024, 15, 255));
-    i = 0;
-    j = 0;
-    q = 0;
   }
 }
 
-// Input a value 0 to 255 to get a color value.
-// The colours are a transition r - g - b - back to r.
 uint32_t Wheel(byte WheelPos) {
   WheelPos = 255 - WheelPos;
   if (WheelPos < 85) {
