@@ -11,8 +11,9 @@ void colorWipe(uint32_t c, uint8_t wait) {
   //without delay
   modetimer = millis();
   if (modetimer - modetimerprev >= wait) {
-    if (i < Glowstrip.numPixels()) {
+    if (i < Glowstrip.numPixels()/2) {
       Glowstrip.setPixelColor(i, c);
+      Glowstrip.setPixelColor(Glowstrip.numPixels() - i-1, c);
       Glowstrip.show();
       i++;
       modetimerprev = modetimer;
@@ -20,7 +21,6 @@ void colorWipe(uint32_t c, uint8_t wait) {
       i = 0;
     }
   }
-
 }
 
 void edgescolorWipe(uint32_t c, uint8_t wait) {

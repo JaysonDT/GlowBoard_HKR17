@@ -4,7 +4,13 @@
 #endif
 
 #define PIN 6
-#define LEDCOUNT 56
+#define LEDCOUNT 54
+
+//potentiometer analog
+#define potpin 0
+int potval = 0;
+int oldpotval = 0;
+int percentval = 0;
 
 //code for no delay
 uint32_t modetimer = 0;
@@ -16,6 +22,7 @@ int cycle = 0;
 
 //mode stuff
 int mode = 1;
+int submode = 0;
 
 //button stuff
 int button1Pin = 8;
@@ -57,6 +64,8 @@ void setup() {
   digitalWrite(button3Pin, LOW);
   Serial.begin(9600);
 
+  oldpotval = analogRead(potpin);
+
   Glowstrip.begin();
   Glowstrip.show(); // Initialize all pixels to 'off'
 }
@@ -65,35 +74,46 @@ void loop() {
 
   switch (mode) {
     case 1:
-      //colorWipe(Glowstrip.Color(34, 76, 12), 85);
-      //coplights(225);
-      //rainbowCycle(5);
-      edgescolorWipe(Glowstrip.Color(0, 0, 255), 200); //white
+      //multiple functions 1 mode
+      modetimer = millis();
+      if (modetimer - modetimerprev >= 100) {
+        if (submode == 0) {
+          colorWipe(Glowstrip.Color(255, 0, 0), 20);
+        } else if (submode == 1) {
+          colorWipe(Glowstrip.Color(0, 0, 255), 20);
+        } else if (submode == 2) {
+          colorWipe(Glowstrip.Color(0, 255, 0), 20);
+        } else if (submode == 3){
+          colorWipe(Glowstrip.Color(255, 255, 255), 20);
+        }
+        if (modetimer - modetimerprev <= 1000) {
 
+          if (submode > 3) {
+            submode = 0;
+          } else {
+            submode++;
+          }
+          modetimerprev = modetimer;
+        }
+      }
       break;
-
     case 2:
-      rainbowCycle(5);
+      rainbowCycle(100);
       break;
-
     case 3:
       coplights(225);
       break;
-
     case 4:
-      fullrainbowCycle(20);
+      fullrainbowCycle(30);
       break;
-
     case 5:
-      usaCycle(10);
+      usaCycle(100);
       break;
-
     case 6:
-      theaterChase(Glowstrip.Color(64, 208, 224), 50);
+      theaterChase(Glowstrip.Color(64, 208, 224), 100);
       break;
-
     case 7:
-      theaterChaseRainbow(20);
+      //theaterChaseRainbow(100);
       break;
     default:
       mode = 1;
@@ -108,8 +128,6 @@ void loop() {
     }
     pressTime = millis() - startTime;
     if (pressTime >= 15) {
-      Serial.print("1Time: ");
-      Serial.println(pressTime);
       buttonpressed = 1;
     }
     if (pressTime > 3000) {
@@ -122,12 +140,7 @@ void loop() {
     }
     pressTime = millis() - startTime;
     if (pressTime >= 15) {
-      Serial.print("2Time: ");
-      Serial.println(pressTime);
       buttonpressed = 2;
-    }
-    if (pressTime > 3000) {
-      //
     }
   } else if (digitalRead(button3Pin) == HIGH) {
     if (firsttime == 1) {
@@ -136,19 +149,14 @@ void loop() {
     }
     pressTime = millis() - startTime;
     if (pressTime >= 15) {
-      Serial.print("3Time: ");
-      Serial.println(pressTime);
       buttonpressed = 3;
-    }
-    if (pressTime > 3000) {
-      //
     }
   } else if (firsttime == 0) {
     firsttime = 1;
     if (buttonpressed == 1) {
-      mode = mode + 1;
-    } else if (buttonpressed == 2) {
 
+    } else if (buttonpressed == 2) {
+      mode = mode + 1;
     } else {
       if (mode != 1) {
         mode = mode - 1;
@@ -157,10 +165,39 @@ void loop() {
         mode = 7;
       }
     }
-    Serial.println("Time: 0 milleseconds; 0 seconds");
     buttonpressed = 0;
   }
 
+  // potentiometer brightnesscode
+  potval = analogRead(potpin);
+  Serial.print("pot: ");
+  Serial.println(potval);
+  if (potval >= oldpotval + 10 || potval <= oldpotval - 10) {
+    modetimer = millis();
+    modetimerprev = millis();
+    while (modetimer - modetimerprev < 500 ) {
+      potval = analogRead(potpin);
+      if (potval >= oldpotval + 10 || potval <= oldpotval - 10) {
+        oldpotval = analogRead(potpin);
+      }
+
+      Serial.print("potval: ");
+      Serial.println(potval);
+      percentval = map(potval, 1, 1024, 1, 100);
+      //percentval = potval / 10;
+      percentWipe(20, percentval);
+      if (potval != oldpotval) {
+        modetimerprev = modetimer;
+      }
+      modetimer = millis();
+      oldpotval = analogRead(potpin);
+    }
+
+    Glowstrip.setBrightness(map(potval, 1, 1024, 15, 255));
+    i = 0;
+    j = 0;
+    q = 0;
+  }
 }
 
 // Input a value 0 to 255 to get a color value.

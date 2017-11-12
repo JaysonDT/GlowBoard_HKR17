@@ -22,7 +22,7 @@ void rainbowCycle(uint8_t wait) {
     modetimer = millis();
     if (modetimer - modetimerprev >= wait && j < 256) {
       for (i = 0; i < Glowstrip.numPixels() / 2; i++) {
-        Glowstrip.setPixelColor(Glowstrip.numPixels() / 2 - i, Wheel(((i * 256 / Glowstrip.numPixels()) + j) & 255));
+        Glowstrip.setPixelColor(Glowstrip.numPixels() / 2 - i -1, Wheel(((i * 256 / Glowstrip.numPixels()) + j) & 255));
         Glowstrip.setPixelColor(Glowstrip.numPixels() / 2 + i, Wheel(((i * 256 / Glowstrip.numPixels()) + j) & 255));
       }
       Glowstrip.show();
