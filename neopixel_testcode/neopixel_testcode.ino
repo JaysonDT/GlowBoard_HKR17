@@ -21,14 +21,19 @@ MMA7660 accelemeter;
 #define buzpin 2
 int buzzermode = false;
 int soundalarm = false;
-int accel_sensitivity = 20;
+float accel_sensitivity = 0.5;
 int8_t x;
 int8_t y;
 int8_t z;
 float ax, ay, az;
-int oldx = 0;
-int oldy = 0;
-int oldz = 0;
+
+float oldx = 0;
+float oldy = 0;
+float oldz = 0;
+
+float prevx = 0;
+float prevy = 0;
+float prevz = 0;
 
 //code for no delay
 uint32_t modetimer = 0;
@@ -95,47 +100,58 @@ void setup() {
 void loop() {
 
   switch (mode) {
-    case 1:
-      //multiple functions 1 mode
-      modetimer = millis();
-      //if (modetimer - modetimerprev >= 100) {
-      if (submode == 0) {
-        colorWipe(Glowstrip.Color(255, 0, 0), 20);
-      } else if (submode == 1) {
-        colorWipe(Glowstrip.Color(0, 0, 255), 20);
-      } else if (submode == 2) {
-        colorWipe(Glowstrip.Color(0, 255, 0), 20);
-      } else if (submode == 3) {
-        colorWipe(Glowstrip.Color(255, 255, 255), 20);
-      }
-      if (modetimer - modetimerprev >= 2000) {
-
-        if (submode > 3) {
-          submode = 0;
-        } else {
-          submode = submode + 1;
+    case 1: colorWipe(Glowstrip.Color(150, 150, 150), 20);
+      /*
+        //multiple functions 1 mode
+        modetimer = millis();
+        //if (modetimer - modetimerprev >= 100) {
+        if (submode == 0) {
+          colorWipe(Glowstrip.Color(255, 0, 0), 20);
+        } else if (submode == 1) {
+          colorWipe(Glowstrip.Color(0, 0, 255), 20);
+        } else if (submode == 2) {
+          colorWipe(Glowstrip.Color(0, 255, 0), 20);
+        } else if (submode == 3) {
+          colorWipe(Glowstrip.Color(255, 255, 255), 20);
         }
-        modetimerprev = modetimer;
-      }
-      //}
+        if (modetimer - modetimerprev >= 2000) {
+
+          if (submode > 3) {
+            submode = 0;
+          } else {
+            submode = submode + 1;
+          }
+          modetimerprev = modetimer;
+        }
+        //}
+      */
       break;
     case 2:
-      rainbowCycle(25);
+      colorWipe(Glowstrip.Color(255, 0, 0), 20);
       break;
     case 3:
-      coplights(225);
+      colorWipe(Glowstrip.Color(0, 0, 255), 20);
       break;
     case 4:
-      fullrainbowCycle(30);
+      colorWipe(Glowstrip.Color(0, 255, 0), 20);
       break;
     case 5:
-      usaCycle(10);
+      rainbowCycle(12);
       break;
     case 6:
-      theaterChase(Glowstrip.Color(64, 208, 224), 100, 7);
+      coplights(225);
       break;
     case 7:
-      //theaterChaseRainbow(100);
+      rainbowCycle(20);
+      break;
+    case 8:
+      usaCycle(10);
+      break;
+    case 9:
+      theaterChase(Glowstrip.Color(64, 208, 224), 100, 7);
+      break;
+    case 10:
+      theaterChase(Glowstrip.Color(0, 208, 224), 100, 3);
       break;
     default:
       mode = 1;
@@ -180,13 +196,22 @@ void loop() {
       buzzermode = true;
     } else if (buttonpressed == 2) {
       mode = mode + 1;
+      
+      i = 0;
+      j = 0;
+      q = 0;
     } else {
       if (mode != 1) {
         mode = mode - 1;
       } else {
         //loop back to last number in mode
-        mode = 7;
+        mode = 10;
       }
+      
+      i = 0;
+      j = 0;
+      q = 0;
+      buttonpressed = 0;
     }
     buttonpressed = 0;
   }
@@ -225,8 +250,9 @@ void loop() {
     }
   }
   if (enablebuzzer == true && buzzermode == true) {
-
-    colorWipe(Glowstrip.Color(0, 0, 0), 5);
+    for (int i = 0; i < 200; i++) {
+      colorWipe(Glowstrip.Color(0, 0, 0), 0);
+    }
     delay(100);
     digitalWrite(buzpin, HIGH);
     delay(500);
@@ -235,22 +261,36 @@ void loop() {
     digitalWrite(buzpin, HIGH);
     delay(200);
     digitalWrite(buzpin, LOW);
-    colorWipe(Glowstrip.Color(0, 0, 0), 5);
-    accelemeter.getXYZ(&x, &y, &z);
-    int oldx = x;
-    int oldy = y;
-    int oldz = z;
+
+
+    accelemeter.getAcceleration(&ax, &ay, &az);
+    oldx = ax;
+    oldy = ay;
+    oldz = az;
     while (buzzermode == true) {
-      accelemeter.getXYZ(&x, &y, &z);
+      accelemeter.getAcceleration(&ax, &ay, &az);
+      Serial.print(oldx);
+      Serial.print(" g");
+      Serial.print(oldy);
+      Serial.print(" g");
+      Serial.print(oldz);
+      Serial.print(" g");
+      Serial.print(ax);
+      Serial.print(" g");
+      Serial.print(ay);
+      Serial.print(" g");
+      Serial.print(az);
+      Serial.println(" g");
       //if the board is moved too quickly it sounds alarm
-      if ( (x > oldx + accel_sensitivity || x < oldx - accel_sensitivity) ||
-           (y > oldy + accel_sensitivity || y < oldy - accel_sensitivity) ||
-           (z > oldz + accel_sensitivity || z < oldz - accel_sensitivity)  ) {
+      if ( (ax + prevx) / 2 > oldx + accel_sensitivity || (ax + prevx) / 2 < oldx - accel_sensitivity) {
         soundalarm = true;
       }
-      int oldx = x;
-      int oldy = y;
-      int oldz = z;
+      if (((ay + prevy) / 2 > oldy + accel_sensitivity || (ay + prevy) / 2 < oldy - accel_sensitivity) ) {
+        soundalarm = true;
+      }
+      if (((az + prevz) / 2 > oldz + accel_sensitivity || (az + prevz) / 2 < oldz - accel_sensitivity)  ) {
+        soundalarm = true;
+      }
       if (soundalarm == true) {
         digitalWrite(buzpin, HIGH);
         //Serial.print("ALARM");
@@ -273,9 +313,14 @@ void loop() {
           digitalWrite(buzpin, LOW);
           buzzermode = false;
           soundalarm = false;
+          break;
         }
       }
+      prevx = ax;
+      prevy = ay;
+      prevz = az;
     }
+
   }
 }
 
