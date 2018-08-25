@@ -4,12 +4,17 @@
 #endif
 
 #define PIN 0
-#define LEDCOUNT 54
+// Still gotta update this code to check eeprom for LED count, so it'll be
+// full modular with many different boards without having to manually
+// modify the code for each board
+// jayson 54
+// dom    48
+#define LEDCOUNT 48
 #define beginbright 100
 
 //potentiometer analog
-#define enablepot false
-#define potpin 0
+#define enablepot true
+#define potpin 3
 int potval = 0;
 int oldpotval = 0;
 int percentval = 0;
@@ -196,7 +201,7 @@ void loop() {
         if (potval != oldpotval) {
           modetimerprev = modetimer;
         }
-        Glowstrip.setBrightness(map(potval, 1, 1024, 15, 256));
+        Glowstrip.setBrightness(map(potval, 1, 1024, 15, 255));
         modetimer = millis();
         oldpotval = analogRead(potpin);
       }
